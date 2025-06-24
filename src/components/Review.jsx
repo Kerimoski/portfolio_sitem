@@ -10,7 +10,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from '@gsap/react';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 
 /**
@@ -68,6 +68,42 @@ const reviews = [
 
 const Review = () => {
   const scrollRef = useRef(null);
+  const [displayReviews, setDisplayReviews] = useState(reviews);
+
+  useEffect(() => {
+    loadReviews();
+    
+    // Dashboard'dan gelen güncellemeleri dinle
+    const handleReviewsUpdate = () => {
+      loadReviews();
+    };
+    
+    window.addEventListener('reviewsUpdated', handleReviewsUpdate);
+    
+    return () => {
+      window.removeEventListener('reviewsUpdated', handleReviewsUpdate);
+    };
+  }, []);
+
+  const loadReviews = () => {
+    // Default reviews
+    let allReviews = [...reviews];
+    
+    // Kullanıcı tarafından eklenen yorumları yükle
+    const savedReviews = localStorage.getItem('portfolio-reviews');
+    if (savedReviews) {
+      try {
+        const userReviews = JSON.parse(savedReviews);
+        // Sadece onaylanmış yorumları ekle
+        const approvedUserReviews = userReviews.filter(review => review.status === 'approved');
+        allReviews = [...allReviews, ...approvedUserReviews];
+      } catch (error) {
+        console.error('Yorumlar yüklenirken hata:', error);
+      }
+    }
+    
+    setDisplayReviews(allReviews);
+  };
 
   return (
     <section
@@ -85,7 +121,7 @@ const Review = () => {
             className="flex items-stretch gap-3 overflow-x-auto hide-scrollbar scroll-smooth"
             style={{ scrollBehavior: 'smooth' }}
           >
-            {reviews.map(({ content, name, imgSrc, company }, key) => (
+            {displayReviews.map(({ content, name, imgSrc, company }, key) => (
               <ReviewCard
                 key={key}
                 name={name}

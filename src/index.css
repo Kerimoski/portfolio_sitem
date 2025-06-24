@@ -185,3 +185,69 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Dashboard specific styles */
+.input-field {
+  @apply block outline-none w-full px-3 py-3 text-sm bg-zinc-700 rounded-xl ring-1 ring-inset ring-transparent transition-shadow hover:ring-zinc-50/5 focus:ring-sky-400 focus:ring-2 text-white placeholder-zinc-400
+}
+
+.dashboard-card {
+  @apply bg-zinc-800 p-6 rounded-lg border border-zinc-700 hover:border-zinc-600 transition-colors
+}
+
+.stat-card {
+  @apply bg-gradient-to-br from-zinc-800 to-zinc-900 p-6 rounded-lg border border-zinc-700 hover:border-zinc-600 transition-all hover:scale-[1.02]
+}
+
+.progress-bar {
+  @apply w-full bg-zinc-700 rounded-full h-2 overflow-hidden
+}
+
+.progress-fill {
+  @apply h-full rounded-full transition-all duration-500
+}
+
+.analytics-chart {
+  @apply relative h-32 bg-zinc-800 rounded-lg p-4 border border-zinc-700
+}
+
+.chart-bar {
+  @apply bg-gradient-to-t from-sky-600 to-sky-400 rounded-t transition-all duration-300 hover:from-sky-500 hover:to-sky-300
+}
+
+.refresh-animation {
+  animation: spin 1s linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pulse-dot {
+  @apply w-2 h-2 bg-green-400 rounded-full animate-pulse
+}
+
+.status-badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium border
+}
+
+.success-badge {
+  @apply bg-green-500/20 text-green-400 border-green-500/30
+}
+
+.warning-badge {
+  @apply bg-orange-500/20 text-orange-400 border-orange-500/30
+}
+
+.error-badge {
+  @apply bg-red-500/20 text-red-400 border-red-500/30
+}
+
+.info-badge {
+  @apply bg-blue-500/20 text-blue-400 border-blue-500/30
+}

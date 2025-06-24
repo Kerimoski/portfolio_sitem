@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLogin from '../components/DashboardLogin';
 import LazyImage from '../components/LazyImage';
+import ReviewManager from '../components/ReviewManager';
+import AnalyticsChart from '../components/AnalyticsChart';
+
 
 const Dashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,11 +23,37 @@ const Dashboard = () => {
     totalViews: 0,
     totalClicks: 0
   });
+  const [analyticsData, setAnalyticsData] = useState({});
 
   useEffect(() => {
     checkAuth();
     loadProjects();
-  }, []);
+    loadAnalyticsData();
+    
+    // Analytics verileri güncelleme listener'ı
+    const interval = setInterval(() => {
+      if (activeTab === 'analytics') {
+        loadAnalyticsData();
+      }
+    }, 10000); // 10 saniyede bir güncelle
+    
+    // Analytics güncellemelerini dinle
+    const handleAnalyticsUpdate = () => {
+      loadAnalyticsData();
+    };
+    
+    window.addEventListener('analyticsUpdated', handleAnalyticsUpdate);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('analyticsUpdated', handleAnalyticsUpdate);
+    };
+  }, [activeTab]);
+
+  const loadAnalyticsData = () => {
+    const data = JSON.parse(localStorage.getItem('portfolio-analytics') || '{}');
+    setAnalyticsData(data);
+  };
 
   const checkAuth = () => {
     const authStatus = localStorage.getItem('dashboard-auth');
@@ -484,6 +513,28 @@ const Dashboard = () => {
               Proje Ekle
             </button>
             <button
+              onClick={() => setActiveTab('analytics')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'analytics'
+                  ? 'border-sky-400 text-sky-400'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600'
+              }`}
+            >
+              <span className="material-symbols-rounded mr-2">analytics</span>
+              Analitik
+            </button>
+            <button
+              onClick={() => setActiveTab('reviews')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'reviews'
+                  ? 'border-sky-400 text-sky-400'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-300 hover:border-zinc-600'
+              }`}
+            >
+              <span className="material-symbols-rounded mr-2">rate_review</span>
+              Değerlendirmeler
+            </button>
+            <button
               onClick={() => setActiveTab('settings')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'settings'
@@ -732,6 +783,334 @@ const Dashboard = () => {
           </div>
         )}
 
+        {activeTab === 'analytics' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-white">Gelişmiş Analitik</h2>
+              <button 
+                onClick={() => {
+                  window.exportAnalyticsData && window.exportAnalyticsData();
+                  setMessage('📥 Analitik verileri indirildi!');
+                  setTimeout(() => setMessage(''), 3000);
+                }}
+                className="btn btn-outline"
+              >
+                <span className="material-symbols-rounded">download</span>
+                Analitik Dışa Aktar
+              </button>
+            </div>
+
+            {/* Ana İstatistikler */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-zinc-400 text-sm">Toplam Sayfa Görüntüleme</p>
+                    <p className="text-2xl font-semibold text-white">
+                      {Object.values(analyticsData.pageViews || {}).reduce((a, b) => a + b, 0)}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                    <span className="material-symbols-rounded text-blue-400">visibility</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-zinc-400 text-sm">Proje Tıklamaları</p>
+                    <p className="text-2xl font-semibold text-white">
+                      {Object.values(analyticsData.projectClicks || {}).reduce((a, b) => a + b, 0)}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                    <span className="material-symbols-rounded text-green-400">mouse</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-zinc-400 text-sm">İletişim Formları</p>
+                    <p className="text-2xl font-semibold text-white">
+                      {analyticsData.contactSubmissions || 0}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                    <span className="material-symbols-rounded text-purple-400">mail</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-zinc-400 text-sm">Ortalama Oturum Süresi</p>
+                    <p className="text-2xl font-semibold text-white">
+                      {analyticsData.sessionDuration && analyticsData.sessionDuration.length > 0 
+                        ? `${Math.round(analyticsData.sessionDuration.reduce((a, b) => a + b.duration, 0) / analyticsData.sessionDuration.length)}s`
+                        : '0s'
+                      }
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                    <span className="material-symbols-rounded text-orange-400">timer</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Cihaz Analizi */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+                <h3 className="text-lg font-semibold text-white mb-4">Cihaz Dağılımı</h3>
+                <div className="space-y-4">
+                  {Object.entries(analyticsData.devices || {}).map(([device, count]) => {
+                    const total = Object.values(analyticsData.devices || {}).reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    
+                    return (
+                      <div key={device} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-rounded text-zinc-400">
+                            {device === 'mobile' ? 'smartphone' : device === 'tablet' ? 'tablet' : 'computer'}
+                          </span>
+                          <span className="text-white capitalize">{device}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-24 bg-zinc-700 rounded-full h-2">
+                            <div 
+                              className="bg-sky-500 h-2 rounded-full"
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-zinc-400 text-sm w-12">{percentage}%</span>
+                          <span className="text-white text-sm w-8">{count}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+                <h3 className="text-lg font-semibold text-white mb-4">Tarayıcı Dağılımı</h3>
+                <div className="space-y-4">
+                  {Object.entries(analyticsData.browsers || {}).map(([browser, count]) => {
+                    const total = Object.values(analyticsData.browsers || {}).reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    
+                    return (
+                      <div key={browser} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-rounded text-zinc-400">web</span>
+                          <span className="text-white">{browser}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-24 bg-zinc-700 rounded-full h-2">
+                            <div 
+                              className="bg-green-500 h-2 rounded-full"
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-zinc-400 text-sm w-12">{percentage}%</span>
+                          <span className="text-white text-sm w-8">{count}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Sayfa Görüntülemeleri */}
+            <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+              <h3 className="text-lg font-semibold text-white mb-4">Sayfa Görüntülemeleri</h3>
+              <div className="space-y-3">
+                {Object.entries(analyticsData.pageViews || {}).map(([page, views]) => (
+                  <div key={page} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-rounded text-zinc-400">article</span>
+                      <span className="text-white">{page === '/' ? 'Ana Sayfa' : page}</span>
+                    </div>
+                    <span className="text-sky-400 font-medium">{views} görüntüleme</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* En Popüler Projeler */}
+            <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+              <h3 className="text-lg font-semibold text-white mb-4">En Popüler Projeler</h3>
+              <div className="space-y-3">
+                {Object.entries(analyticsData.projectClicks || {})
+                  .sort(([,a], [,b]) => b - a)
+                  .slice(0, 10)
+                  .map(([project, clicks]) => (
+                  <div key={project} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-rounded text-zinc-400">work</span>
+                      <span className="text-white">{project}</span>
+                    </div>
+                    <span className="text-green-400 font-medium">{clicks} tıklama</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Coğrafi Analiz */}
+            <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+              <h3 className="text-lg font-semibold text-white mb-4">Coğrafi Dağılım</h3>
+              <div className="space-y-3">
+                {Object.entries(analyticsData.countries || {})
+                  .sort(([,a], [,b]) => b - a)
+                  .map(([country, count]) => {
+                    const total = Object.values(analyticsData.countries || {}).reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    
+                    return (
+                      <div key={country} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-rounded text-zinc-400">public</span>
+                          <span className="text-white">{country}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-24 bg-zinc-700 rounded-full h-2">
+                            <div 
+                              className="bg-purple-500 h-2 rounded-full"
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-zinc-400 text-sm w-12">{percentage}%</span>
+                          <span className="text-white text-sm w-8">{count}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+
+            {/* Gelişmiş Analitik Chart'ları */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AnalyticsChart
+                data={analyticsData.visitors?.daily}
+                type="daily-visitors"
+                title="Son 7 Gün Ziyaretçi Trendi"
+                color="blue"
+              />
+              
+              <AnalyticsChart
+                data={analyticsData.pageViews}
+                type="page-views"
+                title="En Çok Görüntülenen Sayfalar"
+                color="sky"
+              />
+              
+              <AnalyticsChart
+                data={analyticsData.devices}
+                type="device-distribution"
+                title="Cihaz Dağılımı"
+                color="green"
+              />
+              
+              <AnalyticsChart
+                data={analyticsData.projectClicks}
+                type="project-clicks"
+                title="En Popüler Projeler"
+                color="purple"
+              />
+            </div>
+            
+            {/* Detaylı Analitik Verileri */}
+            <div className="bg-zinc-800 p-6 rounded-lg border border-zinc-700">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-white">Detaylı Raporlar</h3>
+                <div className="flex items-center gap-2">
+                  <div className="pulse-dot"></div>
+                  <span className="text-xs text-zinc-400">Real-time veriler</span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Oturum Süreleri */}
+                <div className="bg-zinc-700/50 p-4 rounded-lg">
+                  <h4 className="text-white font-medium mb-2">Oturum İstatistikleri</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400 text-sm">Toplam Oturum:</span>
+                      <span className="text-white text-sm">{analyticsData.sessionDuration?.length || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400 text-sm">Ort. Süre:</span>
+                      <span className="text-white text-sm">
+                        {analyticsData.sessionDuration && analyticsData.sessionDuration.length > 0 
+                          ? `${Math.round(analyticsData.sessionDuration.reduce((a, b) => a + b.duration, 0) / analyticsData.sessionDuration.length)}s`
+                          : '0s'
+                        }
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-400 text-sm">En Uzun Oturum:</span>
+                      <span className="text-white text-sm">
+                        {analyticsData.sessionDuration && analyticsData.sessionDuration.length > 0 
+                          ? `${Math.max(...analyticsData.sessionDuration.map(s => s.duration))}s`
+                          : '0s'
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* İndirme İstatistikleri */}
+                <div className="bg-zinc-700/50 p-4 rounded-lg">
+                  <h4 className="text-white font-medium mb-2">İndirmeler</h4>
+                  <div className="space-y-2">
+                    {Object.entries(analyticsData.downloads || {}).slice(0, 3).map(([file, count]) => (
+                      <div key={file} className="flex justify-between">
+                        <span className="text-zinc-400 text-sm truncate">{file}:</span>
+                        <span className="text-white text-sm">{count}</span>
+                      </div>
+                    ))}
+                    {Object.keys(analyticsData.downloads || {}).length === 0 && (
+                      <span className="text-zinc-500 text-sm">Henüz indirme yok</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Son Aktiviteler */}
+                <div className="bg-zinc-700/50 p-4 rounded-lg">
+                  <h4 className="text-white font-medium mb-2">Son Aktiviteler</h4>
+                  <div className="space-y-2">
+                    {analyticsData.lastProjectClick && (
+                      <div className="text-sm">
+                        <span className="text-zinc-400">Son proje tıklaması:</span>
+                        <p className="text-white truncate">{analyticsData.lastProjectClick.project}</p>
+                        <p className="text-xs text-zinc-500">
+                          {new Date(analyticsData.lastProjectClick.timestamp).toLocaleString('tr-TR')}
+                        </p>
+                      </div>
+                    )}
+                    {analyticsData.lastContactSubmission && (
+                      <div className="text-sm">
+                        <span className="text-zinc-400">Son iletişim:</span>
+                        <p className="text-xs text-zinc-500">
+                          {new Date(analyticsData.lastContactSubmission).toLocaleString('tr-TR')}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <ReviewManager />
+        )}
+
         {activeTab === 'settings' && (
           <div className="max-w-2xl space-y-6">
             <h2 className="text-xl font-semibold text-white mb-6">Dashboard Ayarları</h2>
@@ -782,6 +1161,63 @@ const Dashboard = () => {
                 >
                   <span className="material-symbols-rounded mr-2">delete_forever</span>
                   Kullanıcı Projelerini Sil
+                </button>
+
+                <button 
+                  onClick={() => {
+                    if (window.confirm('TÜM ANALİTİK VERİLER SİLİNECEK! Bu işlem geri alınamaz. Emin misiniz?')) {
+                      localStorage.removeItem('portfolio-analytics');
+                      setAnalyticsData({});
+                      setMessage('🧹 Tüm analitik veriler temizlendi');
+                      setTimeout(() => setMessage(''), 3000);
+                    }
+                  }}
+                  className="btn bg-orange-600 hover:bg-orange-700 text-white w-full justify-center"
+                >
+                  <span className="material-symbols-rounded mr-2">cleaning_services</span>
+                  Analitik Verilerini Temizle
+                </button>
+
+                <button 
+                  onClick={() => {
+                    if (window.confirm('Kullanıcı tarafından eklenen TÜM YORUMLAR silinecek! Default yorumlar korunacak. Bu işlem geri alınamaz.')) {
+                      localStorage.removeItem('portfolio-reviews');
+                      window.dispatchEvent(new Event('reviewsUpdated'));
+                      setMessage('🗑️ Kullanıcı yorumları silindi');
+                      setTimeout(() => setMessage(''), 3000);
+                    }
+                  }}
+                  className="btn bg-purple-600 hover:bg-purple-700 text-white w-full justify-center"
+                >
+                  <span className="material-symbols-rounded mr-2">rate_review</span>
+                  Kullanıcı Yorumlarını Sil
+                </button>
+
+                <button 
+                  onClick={() => {
+                    if (window.confirm('TÜM KULLANICI VERİLERİ SİLİNECEK! (Projeler, Analitik, Yorumlar) Default veriler korunacak. Bu işlem geri alınamaz!')) {
+                      // Tüm kullanıcı verilerini sil
+                      localStorage.removeItem('portfolio-projects');
+                      localStorage.removeItem('portfolio-projects-order');
+                      localStorage.removeItem('portfolio-analytics');
+                      localStorage.removeItem('portfolio-reviews');
+                      
+                      // State'leri sıfırla
+                      setProjects([...defaultProjects]);
+                      setAnalyticsData({});
+                      
+                      // Events tetikle
+                      window.dispatchEvent(new Event('projectsUpdated'));
+                      window.dispatchEvent(new Event('reviewsUpdated'));
+                      
+                      setMessage('💥 Tüm kullanıcı verileri temizlendi! Site sıfırlandı.');
+                      setTimeout(() => setMessage(''), 5000);
+                    }
+                  }}
+                  className="btn bg-red-800 hover:bg-red-900 text-white w-full justify-center border-2 border-red-600"
+                >
+                  <span className="material-symbols-rounded mr-2">delete_sweep</span>
+                  TÜM VERİLERİ TEMİZLE
                 </button>
                 
                 <div className="bg-amber-900/20 border border-amber-700 rounded-lg p-4">

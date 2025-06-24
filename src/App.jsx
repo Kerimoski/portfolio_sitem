@@ -28,7 +28,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
 import SEOHead from "./components/SEOHead";
-import Analytics from "./components/Analytics";
+import AdvancedAnalytics from "./components/AdvancedAnalytics";
 
 
 const App = () => {
@@ -79,7 +79,7 @@ const App = () => {
 
   return (
     <ReactLenis root>
-      <Analytics />
+      <AdvancedAnalytics />
       <Routes>
         <Route path="/" element={
           <>
