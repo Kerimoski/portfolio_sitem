@@ -378,29 +378,92 @@ const Dashboard = () => {
   const exportData = () => {
     const data = {
       projects: projects,
-      stats: {
-        totalProjects: projects.length,
-        activeProjects: projects.filter(p => p.projectLink).length
-      },
       exportDate: new Date().toISOString(),
-      version: '3.0'
+      totalProjects: projects.length
     };
+
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json'
-    });
+    const exportFileDefaultName = `portfolio-backup-${new Date().toISOString().split('T')[0]}.json`;
     
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `portfolio-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
     
-    setMessage('📥 Veriler başarıyla dışa aktarıldı!');
+    setMessage('✅ Veriler başarıyla export edildi!');
     setTimeout(() => setMessage(''), 3000);
+  };
+
+  // Yeni fonksiyon: JSON dosyasını güncelle
+  const updatePublicJSON = () => {
+    const jsonData = projects.map(project => ({
+      id: project.id,
+      imgSrc: project.imgSrc,
+      title: project.title,
+      tags: project.tags,
+      projectLink: project.projectLink
+    }));
+
+    const dataStr = JSON.stringify(jsonData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', 'projects.json');
+    linkElement.click();
+    
+    setMessage('📄 projects.json dosyası indirildi! Bu dosyayı public/data/ klasörüne yükleyin.');
+    setTimeout(() => setMessage(''), 5000);
+  };
+
+  // Yeni fonksiyon: API ile direkt güncelleme
+  const updateViaAPI = async () => {
+    if (projects.length === 0) {
+      setMessage('❌ Güncellenecek proje yok!');
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    setMessage('🔄 API ile güncelleniyor...');
+    
+    try {
+      const response = await fetch('/api/update-projects.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projects: projects.map(project => ({
+            id: project.id,
+            imgSrc: project.imgSrc,
+            title: project.title,
+            tags: project.tags,
+            projectLink: project.projectLink
+          })),
+          password: import.meta.env.VITE_DASHBOARD_PASSWORD || 'kerimoski2024'
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setMessage(`✅ Projeler başarıyla güncellendi! (${result.count} adet)`);
+        
+        // Sayfayı yenile ki değişiklikler görünsün
+        setTimeout(() => {
+          window.dispatchEvent(new Event('projectsUpdated'));
+        }, 1000);
+      } else {
+        throw new Error(result.error || 'API hatası');
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      setMessage(`❌ API Hatası: ${error.message}. Manuel indirme kullanın.`);
+    }
+    
+    setTimeout(() => setMessage(''), 5000);
   };
 
   if (!isAuthenticated) {
@@ -558,10 +621,20 @@ const Dashboard = () => {
                   ↕️ Sıralamayı değiştirmek için ok tuşlarını kullanın • Ana sayfada aynı sırada görünür
                 </p>
               </div>
-              <button onClick={exportData} className="btn btn-outline">
-                <span className="material-symbols-rounded">download</span>
-                Verileri Dışa Aktar
-              </button>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={updateViaAPI} className="btn btn-primary">
+                  <span className="material-symbols-rounded">cloud_sync</span>
+                  Hızlı Güncelle (API)
+                </button>
+                <button onClick={updatePublicJSON} className="btn btn-secondary">
+                  <span className="material-symbols-rounded">download</span>
+                  Manuel İndir
+                </button>
+                <button onClick={exportData} className="btn btn-outline">
+                  <span className="material-symbols-rounded">backup</span>
+                  Backup
+                </button>
+              </div>
             </div>
             
             {projects.length === 0 ? (

@@ -4,30 +4,52 @@ const Work = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Basit ve güvenilir proje yükleme
-  const loadProjects = () => {
-    console.log('🔄 Projeler yükleniyor (YENİ SİSTEM)...');
+  // Projeler yükleme - JSON dosyası + localStorage kombine
+  const loadProjects = async () => {
+    console.log('🔄 Projeler yükleniyor (KARMA SİSTEM)...');
     
+    let allProjects = [];
+
     try {
+      // 1. Önce localStorage'dan kontrol et (yönetici için)
       const savedData = localStorage.getItem('portfolio-projects');
-      console.log('📦 Raw localStorage data:', savedData);
       
       if (savedData && savedData !== 'null' && savedData !== '[]') {
-        const parsedProjects = JSON.parse(savedData);
-        console.log('✅ Parsed projeler:', parsedProjects);
+        const localProjects = JSON.parse(savedData);
+        console.log('📦 localStorage\'dan projeler:', localProjects);
         
-        if (Array.isArray(parsedProjects) && parsedProjects.length > 0) {
-          // Projeleri aynen kullan
-          setProjects(parsedProjects);
-          console.log('🎯 Projeler state\'e set edildi:', parsedProjects.length, 'adet');
-        } else {
-          console.log('📭 Proje array\'i boş');
-          setProjects([]);
+        if (Array.isArray(localProjects) && localProjects.length > 0) {
+          allProjects = localProjects;
+          console.log('✅ localStorage projeler kullanılıyor:', allProjects.length, 'adet');
         }
-      } else {
-        console.log('📭 localStorage boş veya geçersiz');
-        setProjects([]);
       }
+      
+      // 2. Eğer localStorage boşsa, JSON dosyasından yükle (genel ziyaretçiler için)
+      if (allProjects.length === 0) {
+        console.log('📂 JSON dosyasından projeler yükleniyor...');
+        
+        try {
+          const response = await fetch('/data/projects.json');
+          if (response.ok) {
+            const jsonProjects = await response.json();
+            console.log('📦 JSON\'dan projeler:', jsonProjects);
+            
+            if (Array.isArray(jsonProjects) && jsonProjects.length > 0) {
+              allProjects = jsonProjects;
+              console.log('✅ JSON projeler kullanılıyor:', allProjects.length, 'adet');
+            }
+          } else {
+            console.log('📭 JSON dosyası bulunamadı veya boş');
+          }
+        } catch (jsonError) {
+          console.log('📭 JSON yükleme hatası (normal):', jsonError.message);
+        }
+      }
+
+      // Projeleri set et
+      setProjects(allProjects);
+      console.log('🎯 Final projeler:', allProjects.length, 'adet');
+      
     } catch (error) {
       console.error('❌ Proje yükleme hatası:', error);
       setProjects([]);

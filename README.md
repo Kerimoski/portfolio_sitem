@@ -208,3 +208,75 @@ defaultProjects (kod içi):
 ⭐ **Bu projeyi beğendiyseniz star vermeyi unutmayın!**
 
 🚀 **Artık tam dinamik bir portfolio sisteminiz var!**
+
+## 🌐 Proje Görünürlüğü ve Yönetimi
+
+### LocalStorage vs Public JSON Sistemi
+
+**⚠️ ÖNEMLİ: Projeler diğer kullanıcılarda neden görünmüyor?**
+
+Site iki farklı veri kaynağı kullanır:
+
+1. **LocalStorage (Sadece sizin için)**: Dashboard'dan eklediğiniz projeler localStorage'da saklanır
+2. **Public JSON (Herkes için)**: `public/data/projects.json` dosyasındaki projeler herkeste görünür
+
+### 🚀 Hızlı Çözüm Yöntemleri
+
+#### Yöntem 1: API ile Otomatik Güncelleme (Önerilen)
+1. Dashboard'a giriş yapın (`/dashboard`)
+2. Projelerinizi ekleyin/düzenleyin
+3. **"Hızlı Güncelle (API)"** butonuna tıklayın
+4. ✅ Tamam! Projeler anında tüm ziyaretçilerde görünür
+
+#### Yöntem 2: Manuel İndirme (Yedek)
+1. Dashboard'a giriş yapın (`/dashboard`)
+2. **"Manuel İndir"** butonuna tıklayın
+3. İndirilen `projects.json` dosyasını `public/data/` klasörüne yükleyin
+4. Siteyi yeniden deploy edin
+
+#### Yöntem 3: Script ile Güncelleme
+```bash
+npm run update-projects
+# JSON verisini yapıştırın ve enter basın
+```
+
+### 📋 API Gereksinimleri
+
+Hosting'inizde PHP desteği varsa API otomatik çalışır:
+- ✅ PHP 7.4+
+- ✅ JSON extension
+- ✅ File write permissions
+
+### 🔧 Hosting'e Yükleme
+
+```bash
+# Build oluştur
+npm run build
+
+# API dosyalarını da dahil et
+cp -r public/api dist/
+cp -r public/data dist/
+
+# dist/ klasörünü hosting'e yükle
+```
+
+### 📊 Veri Akışı
+
+```
+Dashboard → LocalStorage → API → public/data/projects.json → Public Site
+```
+
+### 🔒 Güvenlik
+
+API endpoint şifre korumalı:
+- Environment variable: `DASHBOARD_PASSWORD`
+- Fallback: 
+- Otomatik backup oluşturur
+
+Bu sistem sayesinde:
+- ✅ **Anında güncelleme** - API ile
+- ✅ **Manuel kontrol** - İndirme ile  
+- ✅ **Güvenli** - Şifre korumalı
+- ✅ **Yedekli** - Otomatik backup
+
+---
