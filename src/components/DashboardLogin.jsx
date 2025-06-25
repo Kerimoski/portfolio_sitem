@@ -76,19 +76,19 @@ const DashboardLogin = ({ onLogin }) => {
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center animate-pulse">
                   <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
               )}
             </div>
 
             <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent mb-2">
-              Dashboard Girişi
+            Dashboard Girişi
             </h1>
             <p className="text-zinc-400 text-sm mb-8">
               Portfolio yönetim paneline güvenli erişim
-            </p>
-          </div>
+          </p>
+        </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
@@ -96,37 +96,37 @@ const DashboardLogin = ({ onLogin }) => {
             <div className="relative group">
               <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
                 Güvenlik Şifresi
-              </label>
+            </label>
               <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-600 rounded-xl text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 backdrop-blur-sm"
                   placeholder="Şifrenizi girin..."
-                  disabled={isLoading}
-                />
+              disabled={isLoading}
+            />
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
-            </div>
+          </div>
 
             {/* Error Message */}
-            {error && (
+          {error && (
               <div className="relative">
                 <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm backdrop-blur-sm animate-shake">
                   <div className="flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
-                    {error}
+              {error}
                   </div>
                 </div>
-              </div>
-            )}
+            </div>
+          )}
 
             {/* Submit Button */}
             <button
@@ -138,36 +138,36 @@ const DashboardLogin = ({ onLogin }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
               
               <div className="relative z-10 flex items-center justify-center gap-2">
-                {isLoading ? (
+              {isLoading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <span>Doğrulanıyor...</span>
                   </>
-                ) : (
+              ) : (
                   <>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2m0 0V7a2 2 0 012-2h4a2 2 0 012 2v1M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2" />
                     </svg>
                     <span>Giriş Yap</span>
                   </>
-                )}
+              )}
               </div>
             </button>
 
             {/* Back to Home */}
             <div className="text-center pt-4">
-              <button
-                type="button"
-                onClick={() => window.location.href = '/'}
+            <button
+              type="button"
+              onClick={() => window.location.href = '/'}
                 className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300 transition-colors duration-300 group"
-              >
+            >
                 <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 Ana sayfaya dön
-              </button>
-            </div>
-          </form>
+            </button>
+          </div>
+        </form>
         </div>
 
         {/* Footer */}

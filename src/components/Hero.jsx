@@ -11,17 +11,23 @@ import { useState, useEffect } from 'react';
 
 const Hero = () => {
   const [terminalText, setTerminalText] = useState('');
+  const [showSurprise, setShowSurprise] = useState(false);
+  const [surpriseText, setSurpriseText] = useState('');
+  
   const fullText = `> Kerimoski
-frontend developer
+Full stack developer
 
 > Web sitesi veya aplikasyonamı ihtiyacınız var?
-✔ React.js
+✔ React
+✔ Next.js
 ✔ Node.js
 ✔ TypeScript
 ✔ Tailwind CSS
 
 > Modern Teknolojileri kullanarak
 Hızlıca ve istediğiniz tarzda projelerinizi tamamlayabilirim.`;
+
+  const surpriseMessage = "👋 Selam! Umarım sayfamı beğenmişsindir. 🎉";
 
   useEffect(() => {
     let currentIndex = 0;
@@ -36,6 +42,28 @@ Hızlıca ve istediğiniz tarzda projelerinizi tamamlayabilirim.`;
 
     return () => clearInterval(terminalAnimation);
   }, []);
+
+  // Sürpriz fonksiyonu
+  const showSurpriseMessage = () => {
+    console.log('🎉 Sürpriz butonu tıklandı!'); // Debug
+    setShowSurprise(true);
+    setSurpriseText('');
+    
+    // Typewriter efekti ile mesajı yaz
+    let currentIndex = 0;
+    const typewriterEffect = setInterval(() => {
+      if (currentIndex <= surpriseMessage.length) {
+        setSurpriseText(surpriseMessage.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typewriterEffect);
+        // 3 saniye sonra kapat
+        setTimeout(() => {
+          setShowSurprise(false);
+        }, 3000);
+      }
+    }, 100);
+  };
 
   return (
     <section
@@ -64,14 +92,9 @@ Hızlıca ve istediğiniz tarzda projelerinizi tamamlayabilirim.`;
 
           <div className="flex items-center gap-3">
             <ButtonPrimary
-              label="CV indir"
-              icon="download"
-              onClick={() => {
-                // Analytics tracking
-                if (typeof window !== 'undefined' && window.trackDownload) {
-                  window.trackDownload('abdulkerim_erdurun_cv.pdf');
-                }
-              }}
+              label="Sürpriz"
+              icon="auto_awesome"
+              onClick={showSurpriseMessage}
             />
             <ButtonOutline
               href="#about"
@@ -102,8 +125,62 @@ Hızlıca ve istediğiniz tarzda projelerinizi tamamlayabilirim.`;
           </div>
         </div>
       </div>
+
+      {/* Sürpriz Modal */}
+      {showSurprise && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-zinc-900 border border-emerald-400 rounded-2xl p-8 max-w-md mx-4 relative overflow-hidden shadow-2xl">
+            {/* Neon Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-2xl animate-pulse"></div>
+            
+            {/* Digital Screen Effect */}
+            <div className="relative z-10 text-center">
+              <div className="mb-4">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-400 to-cyan-400 rounded-full flex items-center justify-center animate-bounce">
+                  <span className="text-2xl">🎉</span>
+                </div>
+              </div>
+              
+              <div className="font-mono text-emerald-400 text-xl mb-4 min-h-[2em] flex items-center justify-center">
+                {surpriseText}
+                <span className="ml-1 w-2 h-6 bg-emerald-400 animate-pulse"></span>
+              </div>
+              
+              <div className="text-zinc-400 text-sm">
+                :D
+              </div>
+              
+              {/* Scanlines Effect */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="w-full h-full bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,255,0,0.05)_2px,rgba(0,255,0,0.05)_4px)] animate-pulse"></div>
+              </div>
+            </div>
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setShowSurprise(false)}
+              className="absolute top-4 right-4 w-8 h-8 bg-zinc-800 hover:bg-zinc-700 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
+
+// CSS animasyonları için stil
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+`;
+document.head.appendChild(style);
 
 export default Hero;

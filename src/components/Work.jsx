@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ProjectSlideshow from './ProjectSlideshow';
 
 const Work = () => {
   const [projects, setProjects] = useState([]);
@@ -35,16 +36,16 @@ const Work = () => {
       if (allProjects.length === 0) {
         console.log('💾 localStorage\'dan projeler yükleniyor (fallback)...');
         
-        const savedData = localStorage.getItem('portfolio-projects');
+      const savedData = localStorage.getItem('portfolio-projects');
+      
+      if (savedData && savedData !== 'null' && savedData !== '[]') {
+        const localProjects = JSON.parse(savedData);
+        console.log('📦 localStorage\'dan projeler:', localProjects);
         
-        if (savedData && savedData !== 'null' && savedData !== '[]') {
-          const localProjects = JSON.parse(savedData);
-          console.log('📦 localStorage\'dan projeler:', localProjects);
-          
-          if (Array.isArray(localProjects) && localProjects.length > 0) {
-            allProjects = localProjects;
+        if (Array.isArray(localProjects) && localProjects.length > 0) {
+          allProjects = localProjects;
             console.log('✅ localStorage projeler kullanılıyor (fallback):', allProjects.length, 'adet');
-          }
+            }
         }
       }
 
@@ -105,15 +106,16 @@ const Work = () => {
         {projects.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto bg-zinc-800 rounded-full flex items-center justify-center mb-4">
-              <span className="text-zinc-400 text-2xl">📁</span>
+              <span className="material-symbols-rounded text-zinc-400 text-2xl">folder_open</span>
             </div>
             <h3 className="text-lg font-medium text-white mb-2">Henüz proje yok</h3>
             <p className="text-zinc-400">Dashboard'dan ilk projenizi ekleyin!</p>
             <button 
               onClick={loadProjects}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
             >
-              🔄 Tekrar Yükle
+              <span className="material-symbols-rounded text-sm">refresh</span>
+              Tekrar Yükle
             </button>
           </div>
         ) : (
@@ -127,62 +129,16 @@ const Work = () => {
                   {/* Mavi Glow Efekti - Arka plan */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-sky-600/5 to-cyan-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none"></div>
                   
-                  {/* Görsel Container - Tam referans tasarıma uygun */}
-                  <figure 
-                    className="img-box aspect-square rounded-lg mb-4 overflow-hidden relative group cursor-zoom-in"
-                    onClick={(e) => {
-                      if (project.imgSrc) {
-                        // Create modal for image zoom
-                        const modal = document.createElement('div');
-                        modal.className = 'fixed inset-0 bg-black/90 flex items-center justify-center z-50 cursor-zoom-out';
-                        modal.style.backdropFilter = 'blur(10px)';
-                        
-                        const img = document.createElement('img');
-                        img.src = project.imgSrc;
-                        img.className = 'max-w-[90%] max-h-[90%] object-contain rounded-xl shadow-2xl';
-                        img.alt = project.title;
-                        
-                        modal.appendChild(img);
-                        document.body.appendChild(modal);
-                        
-                        // Close modal on click
-                        modal.onclick = () => document.body.removeChild(modal);
-                        
-                        // Close on ESC key
-                        const handleEsc = (e) => {
-                          if (e.key === 'Escape') {
-                            document.body.removeChild(modal);
-                            document.removeEventListener('keydown', handleEsc);
-                          }
-                        };
-                        document.addEventListener('keydown', handleEsc);
-                      }
-                    }}
-                  >
-                    {/* Zoom Icon - Minimal */}
-                    <div className="absolute top-3 left-3 w-6 h-6 bg-black/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                    
-                    {project.imgSrc ? (
-                <img
-                  src={project.imgSrc}
-                  alt={project.title}
-                        loading="lazy"
-                        className="img-cover w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentElement.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg, #27272a 0%, #18181b 100%);color:#71717a;"><span style="font-size:2.5rem;">🖼️</span></div>`;
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-900 text-zinc-500">
-                        <span className="text-4xl">🖼️</span>
-                      </div>
-                    )}
-              </figure>
+                  {/* Proje Slideshow */}
+                  <div className="mb-4 rounded-lg overflow-hidden">
+                    <ProjectSlideshow
+                      images={project.images || [project.imgSrc]}
+                      title={project.title}
+                      autoPlay={true}
+                      interval={5000}
+                      aspectRatio="aspect-square"
+                    />
+                  </div>
 
                   {/* İçerik - Tam referans tasarım */}
               <div className="flex items-center justify-between gap-4">

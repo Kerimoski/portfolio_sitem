@@ -2,6 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------- *\
+ * TEMA SİSTEMİ
+\* ---------------------------------- */
+
+:root {
+  /* Default Dark Theme */
+  --theme-bg-primary: theme('colors.zinc.900');
+  --theme-bg-secondary: theme('colors.zinc.800');
+  --theme-bg-tertiary: theme('colors.zinc.700');
+  --theme-text-primary: theme('colors.white');
+  --theme-text-secondary: theme('colors.zinc.400');
+  --theme-accent: theme('colors.sky.400');
+  --theme-accent-hover: theme('colors.sky.300');
+  --theme-border: theme('colors.zinc.700');
+  --theme-surface: theme('colors.zinc.800/50%');
+}
+
+/* Light Theme */
+.theme-light {
+  --theme-bg-primary: theme('colors.gray.50');
+  --theme-bg-secondary: theme('colors.white');
+  --theme-bg-tertiary: theme('colors.gray.100');
+  --theme-text-primary: theme('colors.gray.900');
+  --theme-text-secondary: theme('colors.gray.600');
+  --theme-accent: theme('colors.blue.600');
+  --theme-accent-hover: theme('colors.blue.700');
+  --theme-border: theme('colors.gray.200');
+  --theme-surface: theme('colors.white/80%');
+}
+
+/* Green Theme */
+.theme-green {
+  --theme-bg-primary: theme('colors.emerald.950');
+  --theme-bg-secondary: theme('colors.emerald.900');
+  --theme-bg-tertiary: theme('colors.emerald.800');
+  --theme-text-primary: theme('colors.emerald.50');
+  --theme-text-secondary: theme('colors.emerald.300');
+  --theme-accent: theme('colors.teal.400');
+  --theme-accent-hover: theme('colors.teal.300');
+  --theme-border: theme('colors.emerald.700');
+  --theme-surface: theme('colors.emerald.800/50%');
+}
+
+/* Purple Theme */
+.theme-purple {
+  --theme-bg-primary: theme('colors.purple.950');
+  --theme-bg-secondary: theme('colors.purple.900');
+  --theme-bg-tertiary: theme('colors.purple.800');
+  --theme-text-primary: theme('colors.purple.50');
+  --theme-text-secondary: theme('colors.purple.300');
+  --theme-accent: theme('colors.violet.400');
+  --theme-accent-hover: theme('colors.violet.300');
+  --theme-border: theme('colors.purple.700');
+  --theme-surface: theme('colors.purple.800/50%');
+}
+
 /* Line clamp utilities */
 .line-clamp-1 {
   overflow: hidden;
@@ -40,7 +96,9 @@ html {
 }
 
 body {
-  @apply bg-zinc-900 text-zinc-50
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 
@@ -116,7 +174,7 @@ body {
 /* Navbar */
 
 .navbar {
-  @apply absolute top-full mt-2 right-0 min-w-40 p-2 bg-zinc-50/10 rounded-2xl ring-inset ring-1 ring-zinc-50/5 scale-90 isolate blur-sm opacity-0 invisible transition-[opacity,transform,filter] md:static md:flex md:items-center md:mt-0 md:opacity-100 md:blur-0 md:visible md:scale-100 backdrop-blur-2xl
+  @apply absolute top-full mt-2 left-1/2 transform -translate-x-1/2 min-w-48 p-3 bg-zinc-900/95 rounded-2xl ring-inset ring-1 ring-zinc-50/20 scale-90 isolate blur-sm opacity-0 invisible transition-[opacity,transform,filter] md:static md:flex md:items-center md:mt-0 md:opacity-100 md:blur-0 md:visible md:scale-100 md:transform-none md:translate-x-0 md:bg-transparent md:ring-0 backdrop-blur-xl shadow-2xl z-50
 }
 
 .navbar.active {
@@ -250,4 +308,14 @@ body {
 
 .info-badge {
   @apply bg-blue-500/20 text-blue-400 border-blue-500/30
+}
+
+/* Responsive Utility Classes */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

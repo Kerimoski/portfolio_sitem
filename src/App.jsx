@@ -29,6 +29,7 @@ import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
 import SEOHead from "./components/SEOHead";
 import AdvancedAnalytics from "./components/AdvancedAnalytics";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 
 const App = () => {
@@ -78,26 +79,27 @@ const App = () => {
   }
 
   return (
-    <ReactLenis root>
-      <AdvancedAnalytics />
-      <Routes>
-        <Route path="/" element={
-          <>
-            <SEOHead />
-            <Header />
-            <main>
-              <Hero />
-              <About />
-              <Skill />
-              <Work />
-              <Review />
-              <Contact />
-            </main>
-            <Footer />
-          </>
-        } />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+    <ThemeProvider>
+      <ReactLenis root>
+        <AdvancedAnalytics />
+        <Routes>
+          <Route path="/" element={
+            <>
+              <SEOHead />
+              <Header />
+              <main>
+                <Hero />
+                <About />
+                <Skill />
+                <Work />
+                <Review />
+                <Contact />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
       
       {/* Yukarı çık butonu */}
       {showScrollButton && (
@@ -129,6 +131,7 @@ const App = () => {
         </button>
       )}
     </ReactLenis>
+    </ThemeProvider>
   )
 
 }
