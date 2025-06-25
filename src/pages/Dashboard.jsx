@@ -86,26 +86,49 @@ const Dashboard = () => {
 
   // Artık default projeler yok - sadece user eklenen projeler
 
-  const loadProjects = () => {
-    console.log('🔄 Dashboard projeler yükleniyor...');
+  const loadProjects = async () => {
+    console.log('🔄 Dashboard projeler yükleniyor (SUNUCU + LOCAL)...');
     
     let allProjects = [];
     
-    // Sadece user projelerini yükle
-    const savedProjects = localStorage.getItem('portfolio-projects');
-    if (savedProjects) {
-      try {
-        const userProjects = JSON.parse(savedProjects);
-        console.log('📦 Dashboard localStorage\'dan alınan:', userProjects);
+    try {
+      // 1. Önce API'dan sunucu verilerini çek
+      console.log('🌐 API\'dan projeler yükleniyor...');
+      const response = await fetch('/data/projects.json');
+      if (response.ok) {
+        const apiProjects = await response.json();
+        console.log('📦 API\'dan alınan projeler:', apiProjects);
         
-        allProjects = userProjects.map(project => ({
-          ...project,
-          id: project.id || `user-${Date.now()}-${Math.random()}`
-        }));
-        
-        console.log('✅ Dashboard formatlanmış projeler:', allProjects);
-      } catch (error) {
-        console.error('❌ Dashboard proje yükleme hatası:', error);
+        if (Array.isArray(apiProjects) && apiProjects.length > 0) {
+          allProjects = apiProjects.map(project => ({
+            ...project,
+            id: project.id || `api-${Date.now()}-${Math.random()}`
+          }));
+          console.log('✅ API projeler kullanılıyor:', allProjects.length, 'adet');
+        }
+      }
+    } catch (error) {
+      console.log('📭 API projeler yüklenemedi:', error.message);
+    }
+    
+    // 2. Eğer API'dan veri gelmediyse localStorage'dan yükle (fallback)
+    if (allProjects.length === 0) {
+      console.log('💾 localStorage\'dan projeler yükleniyor...');
+      const savedProjects = localStorage.getItem('portfolio-projects');
+      if (savedProjects) {
+        try {
+          const userProjects = JSON.parse(savedProjects);
+          console.log('📦 localStorage\'dan alınan:', userProjects);
+          
+          allProjects = userProjects.map(project => ({
+            ...project,
+            id: project.id || `local-${Date.now()}-${Math.random()}`
+          }));
+          
+          console.log('✅ localStorage projeler kullanılıyor:', allProjects.length, 'adet');
+        } catch (error) {
+          console.error('❌ localStorage yükleme hatası:', error);
+        }
       }
     }
     
@@ -296,20 +319,55 @@ const Dashboard = () => {
     console.log('💾 User projeler güncellendi:', updatedUserProjects);
     
     try {
+      // 1. localStorage'a kaydet (hızlı görüntüleme için)
       localStorage.setItem('portfolio-projects', JSON.stringify(updatedUserProjects));
       
-      // Projeleri güncelle
+      // 2. Projeleri hemen güncelle
       setProjects(updatedUserProjects);
       
       console.log('📋 Projeler güncellendi:', updatedUserProjects.length, 'adet');
       
-      // Sıralama güncellemesi
+      // 3. Sıralama güncellemesi
       localStorage.setItem('portfolio-projects-order', JSON.stringify(updatedUserProjects.map(p => p.id)));
+      
+      setMessage('✅ Proje eklendi! API\'ya kaydediliyor...');
+      
+      // 4. API'ya kaydet (sunucuya senkronizasyon için)
+      try {
+        const response = await fetch('/api/update-projects.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            projects: updatedUserProjects.map(project => ({
+              id: project.id,
+              imgSrc: project.imgSrc,
+              title: project.title,
+              tags: project.tags,
+              projectLink: project.projectLink
+            })),
+            password: import.meta.env.VITE_DASHBOARD_PASSWORD || 'kerimoski2024'
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          setMessage('✅ Proje başarıyla eklendi ve sunucuya kaydedildi!');
+          console.log('🌐 API\'ya başarıyla kaydedildi');
+        } else {
+          console.warn('⚠️ API kaydı başarısız:', result.error);
+          setMessage('✅ Proje eklendi (yerel) - API kaydı başarısız olabilir');
+        }
+      } catch (apiError) {
+        console.warn('⚠️ API bağlantı hatası:', apiError);
+        setMessage('✅ Proje eklendi (yerel) - API bağlantısı yok');
+      }
       
       console.log('🔄 Ana sayfaya event gönderiliyor...');
       window.dispatchEvent(new Event('projectsUpdated'));
       
-      setMessage('✅ Proje başarıyla eklendi ve hosting\'e hazır!');
       setNewProject({ imgSrc: '', title: '', tags: '', projectLink: '' });
       setSelectedImage(null);
       e.target.reset();
@@ -322,33 +380,67 @@ const Dashboard = () => {
     setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleDelete = (projectId) => {
+  const handleDelete = async (projectId) => {
     if (window.confirm('Bu projeyi silmek istediğinizden emin misiniz?')) {
       console.log('🗑️ Proje siliniyor:', projectId);
       
       // Projeyi listeden çıkar
       const updatedProjects = projects.filter(p => p.id !== projectId);
       
-      // localStorage'ı güncelle
+      // 1. localStorage'ı güncelle (hızlı görüntüleme için)
       localStorage.setItem('portfolio-projects', JSON.stringify(updatedProjects));
       
-      // Sıralama güncellemesi
+      // 2. Sıralama güncellemesi
       localStorage.setItem('portfolio-projects-order', JSON.stringify(updatedProjects.map(p => p.id)));
       
-      // State'i güncelle
+      // 3. State'i güncelle
       setProjects(updatedProjects);
+      
+      setMessage('🗑️ Proje silindi! API\'dan kaldırılıyor...');
+      
+      // 4. API'dan da sil (sunucuya senkronizasyon için)
+      try {
+        const response = await fetch('/api/update-projects.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            projects: updatedProjects.map(project => ({
+              id: project.id,
+              imgSrc: project.imgSrc,
+              title: project.title,
+              tags: project.tags,
+              projectLink: project.projectLink
+            })),
+            password: import.meta.env.VITE_DASHBOARD_PASSWORD || 'kerimoski2024'
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          setMessage('✅ Proje başarıyla silindi ve sunucudan kaldırıldı!');
+          console.log('🌐 API\'dan başarıyla silindi');
+        } else {
+          console.warn('⚠️ API silme başarısız:', result.error);
+          setMessage('✅ Proje silindi (yerel) - API güncelleme başarısız olabilir');
+        }
+      } catch (apiError) {
+        console.warn('⚠️ API bağlantı hatası:', apiError);
+        setMessage('✅ Proje silindi (yerel) - API bağlantısı yok');
+      }
       
       // Ana sayfayı bilgilendir
       window.dispatchEvent(new Event('projectsUpdated'));
       
-      setMessage('🗑️ Proje silindi');
       setTimeout(() => setMessage(''), 3000);
       
       console.log('✅ Proje silme tamamlandı. Kalan projeler:', updatedProjects.length);
     }
   };
 
-  const moveProject = (projectId, direction) => {
+  const moveProject = async (projectId, direction) => {
     const currentIndex = projects.findIndex(p => p.id === projectId);
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     
@@ -359,17 +451,51 @@ const Dashboard = () => {
     const newProjects = [...projects];
     [newProjects[currentIndex], newProjects[newIndex]] = [newProjects[newIndex], newProjects[currentIndex]];
     
-    // State'i güncelle
+    // 1. State'i güncelle
     setProjects(newProjects);
     
-    // localStorage'ı güncelle
+    // 2. localStorage'ı güncelle
     localStorage.setItem('portfolio-projects', JSON.stringify(newProjects));
     localStorage.setItem('portfolio-projects-order', JSON.stringify(newProjects.map(p => p.id)));
+    
+    setMessage('📋 Proje sırası güncellendi! API\'ya kaydediliyor...');
+    
+    // 3. API'ya kaydet (sunucuya senkronizasyon için)
+    try {
+      const response = await fetch('/api/update-projects.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projects: newProjects.map(project => ({
+            id: project.id,
+            imgSrc: project.imgSrc,
+            title: project.title,
+            tags: project.tags,
+            projectLink: project.projectLink
+          })),
+          password: import.meta.env.VITE_DASHBOARD_PASSWORD || 'kerimoski2024'
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setMessage('✅ Sıralama başarıyla güncellendi ve sunucuya kaydedildi!');
+        console.log('🌐 API\'ya başarıyla kaydedildi');
+      } else {
+        console.warn('⚠️ API kaydı başarısız:', result.error);
+        setMessage('✅ Sıralama güncellendi (yerel) - API kaydı başarısız olabilir');
+      }
+    } catch (apiError) {
+      console.warn('⚠️ API bağlantı hatası:', apiError);
+      setMessage('✅ Sıralama güncellendi (yerel) - API bağlantısı yok');
+    }
     
     // Ana sayfayı bilgilendir
     window.dispatchEvent(new Event('projectsUpdated'));
     
-    setMessage('📋 Proje sırası güncellendi');
     setTimeout(() => setMessage(''), 2000);
     
     console.log('✅ Proje sıralama tamamlandı');
@@ -1311,3 +1437,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard; 
+ 

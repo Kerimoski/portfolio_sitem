@@ -4,45 +4,47 @@ const Work = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Projeler yükleme - JSON dosyası + localStorage kombine
+  // Projeler yükleme - Sunucu öncelikli sistem
   const loadProjects = async () => {
-    console.log('🔄 Projeler yükleniyor (KARMA SİSTEM)...');
+    console.log('🔄 Projeler yükleniyor (SUNUCU ÖNCELİKLİ)...');
     
     let allProjects = [];
 
     try {
-      // 1. Önce localStorage'dan kontrol et (yönetici için)
-      const savedData = localStorage.getItem('portfolio-projects');
+      // 1. Önce sunucudaki JSON dosyasından yükle (güncel veriler için)
+      console.log('🌐 Sunucudan projeler yükleniyor...');
       
-      if (savedData && savedData !== 'null' && savedData !== '[]') {
-        const localProjects = JSON.parse(savedData);
-        console.log('📦 localStorage\'dan projeler:', localProjects);
-        
-        if (Array.isArray(localProjects) && localProjects.length > 0) {
-          allProjects = localProjects;
-          console.log('✅ localStorage projeler kullanılıyor:', allProjects.length, 'adet');
+      try {
+        const response = await fetch('/data/projects.json');
+        if (response.ok) {
+          const jsonProjects = await response.json();
+          console.log('📦 Sunucudan projeler:', jsonProjects);
+          
+          if (Array.isArray(jsonProjects) && jsonProjects.length > 0) {
+            allProjects = jsonProjects;
+            console.log('✅ Sunucu projeler kullanılıyor:', allProjects.length, 'adet');
+          }
+        } else {
+          console.log('📭 Sunucu JSON dosyası bulunamadı');
         }
+      } catch (jsonError) {
+        console.log('📭 Sunucu bağlantı hatası:', jsonError.message);
       }
       
-      // 2. Eğer localStorage boşsa, JSON dosyasından yükle (genel ziyaretçiler için)
+      // 2. Eğer sunucudan veri gelmezse, localStorage'dan yükle (fallback)
       if (allProjects.length === 0) {
-        console.log('📂 JSON dosyasından projeler yükleniyor...');
+        console.log('💾 localStorage\'dan projeler yükleniyor (fallback)...');
         
-        try {
-          const response = await fetch('/data/projects.json');
-          if (response.ok) {
-            const jsonProjects = await response.json();
-            console.log('📦 JSON\'dan projeler:', jsonProjects);
-            
-            if (Array.isArray(jsonProjects) && jsonProjects.length > 0) {
-              allProjects = jsonProjects;
-              console.log('✅ JSON projeler kullanılıyor:', allProjects.length, 'adet');
-            }
-          } else {
-            console.log('📭 JSON dosyası bulunamadı veya boş');
+        const savedData = localStorage.getItem('portfolio-projects');
+        
+        if (savedData && savedData !== 'null' && savedData !== '[]') {
+          const localProjects = JSON.parse(savedData);
+          console.log('📦 localStorage\'dan projeler:', localProjects);
+          
+          if (Array.isArray(localProjects) && localProjects.length > 0) {
+            allProjects = localProjects;
+            console.log('✅ localStorage projeler kullanılıyor (fallback):', allProjects.length, 'adet');
           }
-        } catch (jsonError) {
-          console.log('📭 JSON yükleme hatası (normal):', jsonError.message);
         }
       }
 
@@ -50,7 +52,7 @@ const Work = () => {
       setProjects(allProjects);
       console.log('🎯 Final projeler:', allProjects.length, 'adet');
       
-    } catch (error) {
+        } catch (error) {
       console.error('❌ Proje yükleme hatası:', error);
       setProjects([]);
     }
@@ -69,7 +71,7 @@ const Work = () => {
     };
     
     window.addEventListener('projectsUpdated', handleUpdate);
-    
+
     // Cleanup
     return () => {
       window.removeEventListener('projectsUpdated', handleUpdate);
@@ -165,9 +167,9 @@ const Work = () => {
                     </div>
                     
                     {project.imgSrc ? (
-                      <img
-                        src={project.imgSrc}
-                        alt={project.title}
+                <img
+                  src={project.imgSrc}
+                  alt={project.title}
                         loading="lazy"
                         className="img-cover w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
@@ -180,22 +182,22 @@ const Work = () => {
                         <span className="text-4xl">🖼️</span>
                       </div>
                     )}
-                  </figure>
+              </figure>
 
                   {/* İçerik - Tam referans tasarım */}
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
+              <div className="flex items-center justify-between gap-4">
+                <div>
                       <h3 className="title-1 mb-3 text-white font-semibold text-lg">
                         {project.title || 'İsimsiz Proje'}
-                      </h3>
+                  </h3>
 
-                      <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                         {project.tags && project.tags.length > 0 ? (
                           project.tags.map((tag, tagIndex) => (
-                            <span
+                      <span
                               key={tagIndex}
-                              className="h-8 text-sm text-zinc-400 bg-zinc-50/5 grid items-center px-3 rounded-lg"
-                            >
+                        className="h-8 text-sm text-zinc-400 bg-zinc-50/5 grid items-center px-3 rounded-lg"
+                      >
                               {tag}
                             </span>
                           ))
@@ -206,34 +208,34 @@ const Work = () => {
                             </span>
                             <span className="h-8 text-sm text-zinc-400 bg-zinc-50/5 grid items-center px-3 rounded-lg">
                               Development
-                            </span>
+                      </span>
                           </>
                         )}
-                      </div>
-                    </div>
-
-                    {project.projectLink && (
-                      <div className="w-11 h-11 rounded-lg grid place-items-center bg-sky-400 text-zinc-950 shrink-0">
-                        <span className="material-symbols-rounded" aria-hidden="true">
-                          arrow_outward
-                        </span>
-                      </div>
-                    )}
                   </div>
+                </div>
+
+                {project.projectLink && (
+                  <div className="w-11 h-11 rounded-lg grid place-items-center bg-sky-400 text-zinc-950 shrink-0">
+                        <span className="material-symbols-rounded" aria-hidden="true">
+                      arrow_outward
+                    </span>
+                  </div>
+                )}
+              </div>
 
                   {/* Invisible link overlay */}
-                  {project.projectLink && (
-                    <a
-                      href={project.projectLink}
+              {project.projectLink && (
+                <a
+                  href={project.projectLink}
                       target="_blank"
-                      className="absolute inset-0"
-                      rel="noopener noreferrer"
-                    ></a>
-                  )}
-                </div>
+                  className="absolute inset-0"
+                  rel="noopener noreferrer"
+                ></a>
+              )}
+            </div>
               );
             })}
-          </div>
+        </div>
         )}
       </div>
     </section>
