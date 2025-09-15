@@ -96,7 +96,7 @@ const Contact = () => {
                 id="name"
                 autoComplete="name"
                 required
-                placeholder="Abdulkerim Erdurun"
+                placeholder="Adınız"
                 className="text-field reveal-up"
               />
             </div>
@@ -115,7 +115,7 @@ const Contact = () => {
                 id="email"
                 autoComplete="email"
                 required
-                placeholder="erdurunabdulkerim@gmail.com"
+                placeholder="Emailiniz"
                 className="text-field reveal-up"
               />
             </div>
@@ -132,7 +132,7 @@ const Contact = () => {
             <textarea
               name="message"
               id="message"
-              placeholder="Merhaba!"
+              placeholder="Mesajınız"
               required
               className="text-field resize-y min-h-32 max-h-80 reveal-up"
             ></textarea>

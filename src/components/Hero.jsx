@@ -43,26 +43,19 @@ Hızlıca ve istediğiniz tarzda projelerinizi tamamlayabilirim.`;
     return () => clearInterval(terminalAnimation);
   }, []);
 
-  // Sürpriz fonksiyonu
-  const showSurpriseMessage = () => {
-    console.log('🎉 Sürpriz butonu tıklandı!'); // Debug
-    setShowSurprise(true);
-    setSurpriseText('');
-    
-    // Typewriter efekti ile mesajı yaz
-    let currentIndex = 0;
-    const typewriterEffect = setInterval(() => {
-      if (currentIndex <= surpriseMessage.length) {
-        setSurpriseText(surpriseMessage.slice(0, currentIndex));
-        currentIndex++;
-      } else {
-        clearInterval(typewriterEffect);
-        // 3 saniye sonra kapat
-        setTimeout(() => {
-          setShowSurprise(false);
-        }, 3000);
-      }
-    }, 100);
+  // İletişim formuna kaydır
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Form odaklanması için küçük gecikme
+      setTimeout(() => {
+        const nameInput = document.getElementById('name');
+        if (nameInput) {
+          nameInput.focus();
+        }
+      }, 400);
+    }
   };
 
   return (
@@ -92,9 +85,9 @@ Hızlıca ve istediğiniz tarzda projelerinizi tamamlayabilirim.`;
 
           <div className="flex items-center gap-3">
             <ButtonPrimary
-              label="Sürpriz"
-              icon="auto_awesome"
-              onClick={showSurpriseMessage}
+              label="İletişime Geç"
+              icon="mail"
+              onClick={scrollToContact}
             />
             <ButtonOutline
               href="#about"
