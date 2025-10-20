@@ -1,0 +1,321 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------- *\
+ * TEMA SİSTEMİ
+\* ---------------------------------- */
+
+:root {
+  /* Default Dark Theme */
+  --theme-bg-primary: theme('colors.zinc.900');
+  --theme-bg-secondary: theme('colors.zinc.800');
+  --theme-bg-tertiary: theme('colors.zinc.700');
+  --theme-text-primary: theme('colors.white');
+  --theme-text-secondary: theme('colors.zinc.400');
+  --theme-accent: theme('colors.sky.400');
+  --theme-accent-hover: theme('colors.sky.300');
+  --theme-border: theme('colors.zinc.700');
+  --theme-surface: theme('colors.zinc.800/50%');
+}
+
+/* Light Theme */
+.theme-light {
+  --theme-bg-primary: theme('colors.gray.50');
+  --theme-bg-secondary: theme('colors.white');
+  --theme-bg-tertiary: theme('colors.gray.100');
+  --theme-text-primary: theme('colors.gray.900');
+  --theme-text-secondary: theme('colors.gray.600');
+  --theme-accent: theme('colors.blue.600');
+  --theme-accent-hover: theme('colors.blue.700');
+  --theme-border: theme('colors.gray.200');
+  --theme-surface: theme('colors.white/80%');
+}
+
+/* Green Theme */
+.theme-green {
+  --theme-bg-primary: theme('colors.emerald.950');
+  --theme-bg-secondary: theme('colors.emerald.900');
+  --theme-bg-tertiary: theme('colors.emerald.800');
+  --theme-text-primary: theme('colors.emerald.50');
+  --theme-text-secondary: theme('colors.emerald.300');
+  --theme-accent: theme('colors.teal.400');
+  --theme-accent-hover: theme('colors.teal.300');
+  --theme-border: theme('colors.emerald.700');
+  --theme-surface: theme('colors.emerald.800/50%');
+}
+
+/* Purple Theme */
+.theme-purple {
+  --theme-bg-primary: theme('colors.purple.950');
+  --theme-bg-secondary: theme('colors.purple.900');
+  --theme-bg-tertiary: theme('colors.purple.800');
+  --theme-text-primary: theme('colors.purple.50');
+  --theme-text-secondary: theme('colors.purple.300');
+  --theme-accent: theme('colors.violet.400');
+  --theme-accent-hover: theme('colors.violet.300');
+  --theme-border: theme('colors.purple.700');
+  --theme-surface: theme('colors.purple.800/50%');
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Image cover utility */
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Material Symbols */
+.material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+
+
+/* ---------------------------------- *\
+ * BASE
+\* ---------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+
+/* ---------------------------------- *\
+ * TYPOGRAPHY
+\* ---------------------------------- */
+
+.headline-1,
+.headline-2 {
+  @apply max-w-max;
+  background: -webkit-linear-gradient(0deg, #fafafa, #a1a1aa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.headline-1 {
+  @apply text-5xl leading-tight font-semibold lg:text-[55px] lg:leading-[1.15]
+}
+
+.headline-2 {
+  @apply text-3xl lg:text-4xl lg:leading-tight font-semibold
+}
+
+.title-1 {
+  @apply text-[22px] font-normal
+}
+
+
+
+/* ---------------------------------- *\
+ * UTILITIES
+\* ---------------------------------- */
+
+.material-symbols-rounded {
+  @apply w-[1em] h-[1em] overflow-hidden;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.container {
+  @apply px-4 mx-auto lg:px-8 xl:max-w-6xl;
+}
+
+.img-box {
+  @apply bg-zinc-700 overflow-hidden;
+}
+
+.img-cover {
+  @apply w-full h-full object-cover
+}
+
+.section {
+  @apply pt-20 lg:pt-32
+}
+
+.reveal-up {
+  @apply translate-y-20 opacity-0
+}
+
+
+
+/* ---------------------------------- *\
+ * COMPONENTS
+\* ---------------------------------- */
+
+/* Menu btn */
+
+.menu-btn {
+  @apply w-10 h-10 grid place-items-center bg-zinc-50/10 rounded-xl ring-inset ring-1 ring-zinc-50/[0.02] backdrop-blur-2xl hover:bg-zinc-50/15 transition-[transform,background-color] active:scale-95
+}
+
+
+/* Navbar */
+
+.navbar {
+  @apply absolute top-full mt-2 left-1/2 transform -translate-x-1/2 min-w-48 p-3 bg-zinc-900/95 rounded-2xl ring-inset ring-1 ring-zinc-50/20 scale-90 isolate blur-sm opacity-0 invisible transition-[opacity,transform,filter] md:static md:flex md:items-center md:mt-0 md:opacity-100 md:blur-0 md:visible md:scale-100 md:transform-none md:translate-x-0 md:bg-transparent md:ring-0 backdrop-blur-xl shadow-2xl z-50
+}
+
+.navbar.active {
+  @apply opacity-100 scale-100 blur-0 visible
+}
+
+.nav-link {
+  @apply grid items-center h-9 px-4 text-sm font-medium tracking-wide text-zinc-50/50 hover:text-zinc-50 transition-colors
+}
+
+.nav-link.active {
+  @apply text-zinc-900 duration-500
+}
+
+.navbar .active-box {
+  @apply absolute bg-zinc-50 rounded-lg -z-10 transition-[top,left] duration-500
+}
+
+
+/* Button */
+
+.btn {
+  @apply max-w-max h-9 flex items-center gap-2 px-4 rounded-xl font-medium text-sm ring-1 ring-zinc-50/5 ring-inset transition-[background-color]
+}
+
+.btn-secondary {
+  @apply bg-zinc-50 text-zinc-900 active:bg-zinc-50/80
+}
+
+.btn .material-symbols-rounded {
+  @apply text-[18px]
+}
+
+.btn:has( .material-symbols-rounded) {
+  @apply pr-3
+}
+
+.btn-primary {
+  @apply h-11 bg-sky-400 text-zinc-950 hover:bg-sky-300 active:bg-sky-400
+}
+
+.btn-outline {
+  @apply h-11 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-800
+}
+
+
+/* Text field */
+
+.label {
+  @apply block text-zinc-200 text-sm font-normal mb-2
+}
+
+.text-field {
+  @apply block outline-none w-full px-3 py-3 text-sm bg-zinc-800 rounded-xl ring-1 ring-inset ring-transparent transition-shadow hover:ring-zinc-50/5 focus:ring-sky-400 focus:ring-2
+}
+
+.text-field::placeholder {
+  @apply text-zinc-400
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dashboard specific styles */
+.input-field {
+  @apply block outline-none w-full px-3 py-3 text-sm bg-zinc-700 rounded-xl ring-1 ring-inset ring-transparent transition-shadow hover:ring-zinc-50/5 focus:ring-sky-400 focus:ring-2 text-white placeholder-zinc-400
+}
+
+.dashboard-card {
+  @apply bg-zinc-800 p-6 rounded-lg border border-zinc-700 hover:border-zinc-600 transition-colors
+}
+
+.stat-card {
+  @apply bg-gradient-to-br from-zinc-800 to-zinc-900 p-6 rounded-lg border border-zinc-700 hover:border-zinc-600 transition-all hover:scale-[1.02]
+}
+
+.progress-bar {
+  @apply w-full bg-zinc-700 rounded-full h-2 overflow-hidden
+}
+
+.progress-fill {
+  @apply h-full rounded-full transition-all duration-500
+}
+
+.analytics-chart {
+  @apply relative h-32 bg-zinc-800 rounded-lg p-4 border border-zinc-700
+}
+
+.chart-bar {
+  @apply bg-gradient-to-t from-sky-600 to-sky-400 rounded-t transition-all duration-300 hover:from-sky-500 hover:to-sky-300
+}
+
+.refresh-animation {
+  animation: spin 1s linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pulse-dot {
+  @apply w-2 h-2 bg-green-400 rounded-full animate-pulse
+}
+
+.status-badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium border
+}
+
+.success-badge {
+  @apply bg-green-500/20 text-green-400 border-green-500/30
+}
+
+.warning-badge {
+  @apply bg-orange-500/20 text-orange-400 border-orange-500/30
+}
+
+.error-badge {
+  @apply bg-red-500/20 text-red-400 border-red-500/30
+}
+
+.info-badge {
+  @apply bg-blue-500/20 text-blue-400 border-blue-500/30
+}
+
+/* Responsive Utility Classes */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
