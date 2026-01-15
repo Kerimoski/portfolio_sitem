@@ -1,0 +1,23 @@
+{
+    "pageViews": {
+        "/": 0,
+        "/dashboard": 0
+    },
+    "projectClicks": {},
+    "visitors": {
+        "daily": [],
+        "total": 0
+    },
+    "devices": {
+        "desktop": 0,
+        "mobile": 0,
+        "tablet": 0
+    },
+    "browsers": {
+        "Chrome": 0,
+        "Firefox": 0,
+        "Safari": 0,
+        "Edge": 0
+    },
+    "countries": {}
+}

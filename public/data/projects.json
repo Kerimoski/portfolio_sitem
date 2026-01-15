@@ -1,0 +1,126 @@
+[
+  {
+    "id": "user-1767682210145-63oy7adtk",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1767682163/mmidxudufu6thz6nbty4.png",
+    "title": "Eudec2026",
+    "tags": [
+      "Next.js",
+      "JWT Auth"
+    ],
+    "projectLink": "https://www.eudec2026.org/"
+  },
+  {
+    "id": "user-1767681756397-7p0sfk2sn",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1767681688/bsppoc1cmcd9tkpruzie.png",
+    "title": "QR kod yönetimi",
+    "tags": [
+      "Next.js",
+      "Node.js"
+    ],
+    "projectLink": "https://www.qrmenurestoranim.com/"
+  },
+  {
+    "id": "user-1760885351895-3wtwbb1vj",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1760885318/qo0t6h3tdwbqa0vogxy0.png",
+    "title": "Cemre İklimlendirme Sistemleri",
+    "tags": [
+      "React",
+      "Static Exports"
+    ],
+    "projectLink": "https://cemreklima.com/"
+  },
+  {
+    "id": "user-1750932297848-r504h6j5b",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750932263/rvjd9whmfx8rfcqpt0pj.png",
+    "title": "Kooperatif Yönetim ",
+    "tags": [
+      "Next.js",
+      "JWT Auth",
+      "PosteqroSQL"
+    ],
+    "projectLink": "https://koop.bbomizmir.org"
+  },
+  {
+    "id": "user-1750932381495-asgdum7pd",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750932370/xqpkrzxkvzs4efaxkfel.png",
+    "title": "AbuVice Turizm",
+    "tags": [
+      "Next.js",
+      "Tailwind",
+      "Cloud Storge"
+    ],
+    "projectLink": "https://abuviceturizm.com.tr/"
+  },
+  {
+    "id": "user-1750932682108-iuy3n7d8a",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750932514/djh5pjskqddc4nao7qsj.png",
+    "title": "Love Tree",
+    "tags": [
+      "Next.js",
+      "JWTAuth"
+    ],
+    "projectLink": "https://lovetree-itid.vercel.app/"
+  },
+  {
+    "id": "user-1750930425058-gitfkqgru",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750930345/teflqxbcptxtb1eca9lq.jpg",
+    "title": "Gola Atölye (e-ticaret)",
+    "tags": [
+      "React",
+      "Node.js",
+      "Express"
+    ],
+    "projectLink": "https://golaatolye.com/"
+  },
+  {
+    "id": "user-1750930300597-lpezmy8um",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750930263/bykqpkcys5caeribpg0k.jpg",
+    "title": "Tchala",
+    "tags": [
+      "React",
+      "Node.js",
+      "Express"
+    ],
+    "projectLink": "https://tchalatea.com/"
+  },
+  {
+    "id": "user-1750930223282-hle9oi7nx",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750930202/cpqqis94dnqehjcbiqfl.png",
+    "title": "Lojistik",
+    "tags": [
+      "HTML",
+      "CSS",
+      "JS"
+    ],
+    "projectLink": "https://www.vanloglojistik.com/"
+  },
+  {
+    "id": "user-1750930158285-zvah41xgh",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750930095/bdvafwow0fr5x5hvvqxn.jpg",
+    "title": "Araç Kiralama",
+    "tags": [
+      "HTML",
+      "CSS",
+      "JS"
+    ],
+    "projectLink": "https://www.didimegerentacar.com/"
+  },
+  {
+    "id": "user-1750930074515-mmjzjrs38",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750930058/dwfgma32kizzv0lvpafb.png",
+    "title": "Dikogem",
+    "tags": [
+      "Wordpress"
+    ],
+    "projectLink": "https://www.dikogem.com/"
+  },
+  {
+    "id": "user-1750930009416-x0duepvad",
+    "imgSrc": "https://res.cloudinary.com/dgxp3zgko/image/upload/v1750929989/x9a1xheb9zlptulmehv1.png",
+    "title": "Taşımacılık",
+    "tags": [
+      "Wordpress"
+    ],
+    "projectLink": "https://www.vipgaripnakliyat.com/"
+  }
+]

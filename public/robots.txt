@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://abdulkerimerdurun.com/sitemap.xml
+
+# Disallow dashboard access from crawlers
+Disallow: /dashboard
+Disallow: /admin
+
+# Disallow private files
+Disallow: /*.env
+Disallow: /node_modules/
+Disallow: /src/
+
+# Allow common assets
+Allow: /images/
+Allow: /css/
+Allow: /js/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.svg
+Allow: /*.gif
+Allow: /*.webp
+
+# Crawl delay
+Crawl-delay: 1 
